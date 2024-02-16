@@ -3,12 +3,12 @@ use std::collections::HashMap;
 
 pub fn make_task_map_from(items: Vec<Value>) -> HashMap<String, i32> {
     let mut task_map = HashMap::new();
-    for item in items {
+    items.iter().for_each(|item| {
         task_map
             .entry(item["description"].to_string())
             .and_modify(|counter| *counter += 1)
             .or_insert(1);
-    }
+    });
     task_map
 }
 
