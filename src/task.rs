@@ -13,14 +13,14 @@ pub fn make_task_map_from(items: Vec<Value>) -> HashMap<String, i32> {
 }
 
 pub fn print_tasks(map: HashMap<String, i32>) {
-    print_table_header("description", "quantity");
+    print_table_header();
     for (task, quantity) in map.iter() {
         print_table_line(task.to_string(), *quantity);
     }
 }
 
-fn print_table_header(header_1: &str, header_2: &str) {
-    println!("{0: <40} | {1: <10}", header_1, header_2);
+fn print_table_header() {
+    println!("{0: <40} | {1: <10}", "description", "quantity");
 }
 
 fn print_table_line(key: String, value: i32) {
