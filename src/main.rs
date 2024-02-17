@@ -30,18 +30,12 @@ async fn main() {
 }
 
 fn get_input_args() -> GetTasksInput {
-    let username = env::args().nth(1).expect("no username specified");
-    let password = env::args().nth(2).expect("no password specified");
-    let days_before_today = env::args()
+    let username: String = env::args().nth(1).expect("no username specified");
+    let password: String = env::args().nth(2).expect("no password specified");
+    let days_before_today: u64 = env::args()
         .nth(3)
         .expect("no sub days specified")
         .parse::<u64>()
-        .ok()
-        .unwrap_or_default();
-
-    GetTasksInput {
-        username,
-        password,
-        days_before_today,
-    }
+        .expect("days must be a integer number");
+    GetTasksInput::new(days_before_today, password, username)
 }
