@@ -1,15 +1,15 @@
-mod user_credentials;
-mod utils;
 mod request;
 mod task;
+mod user_credentials;
+mod utils;
 
-use crate::user_credentials::make_credentials;
 use crate::request::make_request;
 use crate::task::{make_task_map_from, print_tasks};
+use crate::user_credentials::UserCredentials;
 
 #[tokio::main]
 async fn main() {
-    let response_result = make_request(make_credentials()).send().await;
+    let response_result = make_request(UserCredentials::from_env()).send().await;
     let Ok(response) = response_result else {
         panic!("Reqwest failed: {:?}", response_result);
     };
@@ -26,4 +26,3 @@ async fn main() {
 
     print_tasks(make_task_map_from(items));
 }
-

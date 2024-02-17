@@ -5,8 +5,10 @@ pub struct UserCredentials {
     pub username: String,
 }
 
-pub fn make_credentials() -> UserCredentials {
-    let username = get_env_var("API_USERNAME");
-    let password = get_env_var("API_PASSWORD");
-    UserCredentials { username, password }
+impl UserCredentials {
+    pub fn from_env() -> UserCredentials {
+        let username = get_env_var("API_USERNAME");
+        let password = get_env_var("API_PASSWORD");
+        UserCredentials { username, password }
+    }
 }
