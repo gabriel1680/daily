@@ -16,16 +16,9 @@ pub fn make_request(credentials: UserCredentials) -> reqwest::RequestBuilder {
 }
 
 fn get_days_range() -> (String, String) {
-    let days = match get_env_var("DAYS_BEFORE_DATE").parse::<u64>() {
-        Ok(value) => value,
-        Err(_) => 0,
-    };
+    let days = get_env_var("DAYS_BEFORE_DATE").parse::<u64>().ok().unwrap_or_default();
     let now = Utc::now();
-    let day_before_date_option = now.checked_sub_days(Days::new(days));
-    let day_before_date = match day_before_date_option {
-        Some(date) => date,
-        None => now,
-    };
+    let day_before_date = now.checked_sub_days(Days::new(days)).unwrap_or(now);
     (format_date(now), format_date(day_before_date))
 }
 
