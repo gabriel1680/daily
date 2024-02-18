@@ -1,28 +1,78 @@
-use serde_json::Value;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-pub fn make_task_map_from(items: Vec<Value>) -> HashMap<String, i32> {
-    let mut task_map = HashMap::new();
-    items.iter().for_each(|item| {
+#[derive(Debug, Serialize, Deserialize)]
+pub struct HttpTaskResponse {
+    at: String,
+    billable: bool,
+    description: String,
+    duration: u32,
+    duronly: bool,
+    id: u64,
+    pid: u32,
+    project_id: u32,
+    server_deleted_at: Option<String>,
+    start: String,
+    stop: String,
+    tag_ids: Vec<u64>,
+    tags: Vec<String>,
+    task_id: Option<u64>,
+    uid: u64,
+    user_id: u64,
+    wid: u64,
+    workspace_id: u64,
+}
+
+#[derive(Debug)]
+pub struct Task {
+    description: String,
+    total_duration: u32,
+    tags: Vec<String>,
+    quantity: u64,
+}
+
+pub type TaskMap = HashMap<String, Task>;
+
+pub fn make_task_map_from(tasks: Vec<HttpTaskResponse>) -> TaskMap {
+    let mut task_map: TaskMap = HashMap::new();
+    tasks.iter().for_each(|task| {
         task_map
-            .entry(item["description"].to_string())
-            .and_modify(|counter| *counter += 1)
-            .or_insert(1);
+            .entry(task.description.to_string())
+            .and_modify(|task| {
+                task.quantity += 1;
+                task.total_duration += task.total_duration;
+            })
+            .or_insert(to_task(task));
     });
     task_map
 }
 
-pub fn print_tasks(map: HashMap<String, i32>) {
+fn to_task(htr: &HttpTaskResponse) -> Task {
+    Task {
+        description: htr.description.clone(),
+        total_duration: htr.duration,
+        tags: htr.tags.clone(),
+        quantity: 1,
+    }
+}
+
+pub fn print_tasks(map: TaskMap) {
     print_table_header();
-    for (task, quantity) in map.iter() {
-        print_table_line(task.to_string(), *quantity);
+    for (_, task) in map.iter() {
+        print_task(task);
     }
 }
 
 fn print_table_header() {
-    println!("{0: <40} | {1: <10}", "description", "quantity");
+    println!(
+        "\n{0: <40} | {1: <10} | {2: <10} | {3: <10}",
+        "Description", "Quantity", "Duration", "Tags"
+    );
 }
 
-fn print_table_line(key: String, value: i32) {
-    println!("{0: <40} | {1: <10}", key, value);
+fn print_task(task: &Task) {
+    println!(
+        "{0: <40} | {1: <10} | {2: <10} | {3: <10}",
+        task.description, task.quantity, task.total_duration, task.tags[0]
+    );
 }

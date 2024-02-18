@@ -6,7 +6,7 @@ use std::env;
 
 use crate::get_tasks_input::GetTasksInput;
 use crate::request::make_request;
-use crate::task::{make_task_map_from, print_tasks};
+use crate::task::{make_task_map_from, print_tasks, HttpTaskResponse};
 
 #[tokio::main]
 async fn main() {
@@ -16,17 +16,12 @@ async fn main() {
         panic!("Reqwest failed: {:?}", response_result);
     };
 
-    let json_result = response.json::<serde_json::Value>().await;
-    let Ok(json) = json_result else {
-        panic!("Parse json failed: {:?}", json_result);
+    let tasks_result = response.json::<Vec<HttpTaskResponse>>().await;
+    let Ok(tasks) = tasks_result else {
+        panic!("Parse json failed: {:?}", tasks_result);
     };
 
-    let items = match json {
-        serde_json::Value::Array(items) => items,
-        _ => panic!("Invalid JSON format: {:?}", json),
-    };
-
-    print_tasks(make_task_map_from(items));
+    print_tasks(make_task_map_from(tasks));
 }
 
 fn get_input_args() -> GetTasksInput {
