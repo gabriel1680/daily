@@ -35,22 +35,22 @@ pub type TaskMap = HashMap<String, Task>;
 
 pub fn make_task_map_from(tasks: Vec<HttpTaskResponse>) -> TaskMap {
     let mut task_map: TaskMap = HashMap::new();
-    tasks.iter().for_each(|task| {
+    for task in tasks {
         task_map
             .entry(task.description.to_string())
             .and_modify(|task| {
                 task.quantity += 1;
-                task.total_duration += task.total_duration;
+                task.total_duration += task.total_duration / 60;
             })
             .or_insert(to_task(task));
-    });
+    }
     task_map
 }
 
-fn to_task(htr: &HttpTaskResponse) -> Task {
+fn to_task(htr: HttpTaskResponse) -> Task {
     Task {
         description: htr.description.clone(),
-        total_duration: htr.duration,
+        total_duration: htr.duration / 60,
         tags: htr.tags.clone(),
         quantity: 1,
     }
@@ -65,14 +65,14 @@ pub fn print_tasks(map: TaskMap) {
 
 fn print_table_header() {
     println!(
-        "\n{0: <40} | {1: <10} | {2: <10} | {3: <10}",
-        "Description", "Quantity", "Duration", "Tags"
+        "\n{0: <40} | {1: <10} | {2: <12} | {3: <10}",
+        "Description", "Quantity", "Duration (h)", "Tags"
     );
 }
 
 fn print_task(task: &Task) {
     println!(
-        "{0: <40} | {1: <10} | {2: <10} | {3: <10}",
+        "{0: <40} | {1: <10} | {2: <12} | {3: <10}",
         task.description, task.quantity, task.total_duration, task.tags[0]
     );
 }
