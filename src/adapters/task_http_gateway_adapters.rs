@@ -82,9 +82,9 @@ fn make_request(url: String) -> reqwest::RequestBuilder {
 
 fn to_task(htr: &HttpTaskResponse) -> Task {
     Task {
+        id: htr.id,
         description: htr.description.clone(),
-        total_duration: htr.duration / 60,
+        duration: htr.duration / 60,
         tags: htr.tags.clone(),
-        quantity: 1,
     }
 }

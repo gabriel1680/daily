@@ -1,4 +1,4 @@
-use crate::adapters::cli_presenter::TaskMap;
+use crate::adapters::cli_presenter::{TaskMap, TaskSummary};
 use crate::adapters::{
     cli_presenter::tasks_cli_presenter, task_http_gateway_adapters::make_http_tasks_gateway,
 };
@@ -44,7 +44,7 @@ fn print_table_header() {
     );
 }
 
-fn print_task(task: &Task) {
+fn print_task(task: &TaskSummary) {
     println!(
         "{0: <40} | {1: <10} | {2: <14} | {3: <10}",
         task.description, task.quantity, task.total_duration, task.tags[0]
