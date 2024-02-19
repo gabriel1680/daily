@@ -40,7 +40,7 @@ fn print_tasks(map: TaskMap) {
 fn print_table_header() {
     println!(
         "\n{0: <40} | {1: <10} | {2: <12} | {3: <10}",
-        "Description", "Quantity", "Duration (h)", "Tags"
+        "Description", "Quantity", "Duration (min)", "Tags"
     );
 }
 
