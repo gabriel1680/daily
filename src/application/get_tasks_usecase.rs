@@ -2,7 +2,7 @@ use std::fmt;
 
 use chrono::{DateTime, Days, Utc};
 
-use crate::{get_tasks_input::GetTasksInput, task::Task};
+use crate::{application::get_tasks_input::GetTasksInput, domain::task::Task};
 
 #[derive(Debug, Clone)]
 pub struct GetTaskErr {

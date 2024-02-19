@@ -1,18 +1,15 @@
-mod adapters;
-mod get_tasks_input;
-mod get_tasks_service;
-mod presenters;
-mod task;
+pub mod adapters;
+pub mod application;
+pub mod domain;
 
 use std::env;
 
-use get_tasks_service::{make_get_tasks_service, TasksGateway};
-use presenters::tasks_cli_presenter;
-use task::Task;
-
-use crate::adapters::make_http_tasks_gateway;
-use crate::get_tasks_input::GetTasksInput;
-use crate::get_tasks_service::GetTaskErr;
+use adapters::{cli_presenter::tasks_cli_presenter, task_adapters::make_http_tasks_gateway};
+use application::{
+    get_tasks_input::GetTasksInput,
+    get_tasks_usecase::{make_get_tasks_service, GetTaskErr, TasksGateway},
+};
+use domain::task::Task;
 
 #[tokio::main]
 async fn main() {

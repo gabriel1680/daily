@@ -4,8 +4,8 @@ use serde::{Deserialize, Serialize};
 use std::env;
 
 use crate::{
-    get_tasks_service::{GetTaskErr, TasksGateway},
-    task::Task,
+    application::get_tasks_usecase::{GetTaskErr, TasksGateway},
+    domain::task::Task,
 };
 
 pub fn make_http_tasks_gateway() -> TasksGateway {

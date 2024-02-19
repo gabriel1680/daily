@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::task::Task;
+use crate::domain::task::Task;
 
 pub fn tasks_cli_presenter(tasks: Vec<Task>) {
     let tasks_map = make_task_map_from(tasks);
