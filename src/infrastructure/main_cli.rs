@@ -1,4 +1,6 @@
-use crate::adapters::{cli_presenter::tasks_cli_presenter, task_adapters::make_http_tasks_gateway};
+use crate::adapters::{
+    cli_presenter::tasks_cli_presenter, task_http_gateway_adapters::make_http_tasks_gateway,
+};
 use crate::application::{
     get_tasks_input::GetTasksInput,
     get_tasks_usecase::{make_get_tasks_service, GetTaskErr, TasksGateway},
