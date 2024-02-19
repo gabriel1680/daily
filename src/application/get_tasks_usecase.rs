@@ -19,7 +19,7 @@ pub type TasksGateway = Box<dyn Fn(String, String) -> Result<Vec<Task>, GetTaskE
 
 pub type GetTasks = Box<dyn Fn(GetTasksInput) -> Result<Vec<Task>, GetTaskErr>>;
 
-pub fn make_get_tasks_service(gateway: TasksGateway) -> GetTasks {
+pub fn get_tasks_usecase(gateway: TasksGateway) -> GetTasks {
     let get_tasks = move |input: GetTasksInput| {
         let (now_date, day_before_date) = get_days_range(input.days_before_today);
         let result = gateway(day_before_date, now_date);

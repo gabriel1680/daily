@@ -4,7 +4,7 @@ use crate::adapters::{
 };
 use crate::application::{
     get_tasks_input::GetTasksInput,
-    get_tasks_usecase::{make_get_tasks_service, GetTaskErr, TasksGateway},
+    get_tasks_usecase::{get_tasks_usecase, GetTaskErr, TasksGateway},
 };
 use crate::domain::task::Task;
 
@@ -13,12 +13,12 @@ use std::env;
 pub fn run_cli() {
     let input: GetTasksInput = get_input_args();
     let gateway: TasksGateway = make_http_tasks_gateway();
-    let tasks_result: Result<Vec<Task>, GetTaskErr> = make_get_tasks_service(gateway)(input);
+    let tasks_result: Result<Vec<Task>, GetTaskErr> = get_tasks_usecase(gateway)(input);
     let Ok(tasks) = tasks_result else {
         panic!("Failed to get tasks: {:?}", tasks_result);
     };
     let tasks_map = tasks_cli_presenter(tasks);
-    print_tasks(tasks_map);
+    print_tasks(&tasks_map);
 }
 
 fn get_input_args() -> GetTasksInput {
@@ -30,7 +30,7 @@ fn get_input_args() -> GetTasksInput {
     GetTasksInput::new(days_before_today)
 }
 
-fn print_tasks(map: TaskMap) {
+fn print_tasks(map: &TaskMap) {
     print_table_header();
     for (_, task) in map.iter() {
         print_task(task);
@@ -39,14 +39,14 @@ fn print_tasks(map: TaskMap) {
 
 fn print_table_header() {
     println!(
-        "\n{0: <40} | {1: <10} | {2: <12} | {3: <10}",
+        "\n{0: <40} | {1: <10} | {2: <14} | {3: <10}",
         "Description", "Quantity", "Duration (min)", "Tags"
     );
 }
 
 fn print_task(task: &Task) {
     println!(
-        "{0: <40} | {1: <10} | {2: <12} | {3: <10}",
+        "{0: <40} | {1: <10} | {2: <14} | {3: <10}",
         task.description, task.quantity, task.total_duration, task.tags[0]
     );
 }
