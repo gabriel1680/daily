@@ -5,7 +5,7 @@ use crate::domain::task::Task;
 #[derive(Debug)]
 pub struct TaskSummary {
     pub description: String,
-    pub total_duration: u32,
+    pub total_duration: f32,
     pub tags: Vec<String>,
     pub quantity: u32,
 }
@@ -29,7 +29,7 @@ pub fn tasks_summary_presenter(tasks: &Vec<Task>) -> TaskMap {
 fn to_output(task: &Task) -> TaskSummary {
     TaskSummary {
         description: task.description.clone(),
-        total_duration: task.duration,
+        total_duration: ((task.duration as f32) / 60.0).round(),
         tags: task.tags.clone(),
         quantity: 1,
     }
