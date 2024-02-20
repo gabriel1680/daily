@@ -1,6 +1,6 @@
-use crate::adapters::cli_presenter::{TaskMap, TaskSummary};
+use crate::adapters::summary_presenter::{TaskMap, TaskSummary};
 use crate::adapters::{
-    cli_presenter::tasks_cli_presenter, task_http_gateway_adapters::make_http_tasks_gateway,
+    summary_presenter::tasks_summary_presenter, task_http_gateway_adapters::make_http_tasks_gateway,
 };
 use crate::application::get_tasks_error::GetTaskErr;
 use crate::application::tasks_gateway::TasksGateway;
@@ -16,7 +16,7 @@ pub fn run_cli() {
     let Ok(tasks) = tasks_result else {
         panic!("Failed to get tasks: {:?}", tasks_result);
     };
-    let tasks_map = tasks_cli_presenter(tasks);
+    let tasks_map = tasks_summary_presenter(&tasks);
     print_tasks(&tasks_map);
 }
 

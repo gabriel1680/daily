@@ -2,9 +2,17 @@ use std::collections::HashMap;
 
 use crate::domain::task::Task;
 
+#[derive(Debug)]
+pub struct TaskSummary {
+    pub description: String,
+    pub total_duration: u32,
+    pub tags: Vec<String>,
+    pub quantity: u32,
+}
+
 pub type TaskMap = HashMap<String, TaskSummary>;
 
-pub fn tasks_cli_presenter(tasks: Vec<Task>) -> TaskMap {
+pub fn tasks_summary_presenter(tasks: &Vec<Task>) -> TaskMap {
     let mut task_map: TaskMap = HashMap::new();
     for task in tasks {
         task_map
@@ -16,14 +24,6 @@ pub fn tasks_cli_presenter(tasks: Vec<Task>) -> TaskMap {
             .or_insert(to_output(&task));
     }
     task_map
-}
-
-#[derive(Debug)]
-pub struct TaskSummary {
-    pub description: String,
-    pub total_duration: u32,
-    pub tags: Vec<String>,
-    pub quantity: u32,
 }
 
 fn to_output(task: &Task) -> TaskSummary {
