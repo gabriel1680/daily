@@ -12,6 +12,7 @@ pub struct TaskSummary {
 
 pub type TaskMap = HashMap<String, TaskSummary>;
 
+/// Map a Vec of Task entity to a HashMap of TaskSummary
 pub fn tasks_summary_presenter(tasks: &Vec<Task>) -> TaskMap {
     let mut task_map: TaskMap = HashMap::new();
     for task in tasks {

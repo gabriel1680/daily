@@ -15,7 +15,12 @@ pub fn make_http_tasks_gateway() -> TasksGateway {
     })
 }
 
+
 /// HttpTasksGateway implementation - retrieves tasks from toggle api endpoint
+///
+/// # Errors
+///
+/// This function will return an error if the toggle api call fails for any reason.
 async fn http_tasks_gateway(start_date: String, end_date: String) -> Result<Vec<Task>, GetTaskErr> {
     let tasks_response_list: Vec<HttpTaskResponse> = make_request(make_url(start_date, end_date))
         .send()

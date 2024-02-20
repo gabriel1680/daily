@@ -7,6 +7,11 @@ use crate::{
     domain::task::Task,
 };
 
+/// GetTasksUseCase
+///
+/// # Errors
+///
+/// This function will return an error if the gateway returns it.
 pub fn get_tasks_usecase(
     gateway: TasksGateway,
 ) -> impl Fn(GetTasksInput) -> Result<Vec<Task>, GetTaskErr> {
