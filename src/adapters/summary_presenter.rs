@@ -35,3 +35,44 @@ fn to_output(task: &Task) -> TaskSummary {
         quantity: 1,
     }
 }
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+
+    #[test]
+    fn tasks_summary_presenter_test() {
+        let tasks = make_dummy_tasks();
+        let output = tasks_summary_presenter(&tasks);
+        let task_1_summary = output.get("Task 1").unwrap();
+        assert_eq!(task_1_summary.quantity, 2);
+        assert_eq!(task_1_summary.total_duration, 120.0);
+        let task_3_summary = output.get("Task 3").unwrap();
+        assert_eq!(task_3_summary.quantity, 1);
+        assert_eq!(task_3_summary.total_duration, 1.0);
+    }
+
+    fn make_dummy_tasks() -> Vec<Task> {
+        vec![
+            Task {
+                id: 1,
+                description: String::from("Task 1"),
+                duration: 3600,
+                tags: vec![String::from("some tag")],
+            },
+            Task {
+                id: 2,
+                description: String::from("Task 1"),
+                duration: 3600,
+                tags: vec![String::from("some tag")],
+            },
+            Task {
+                id: 3,
+                description: String::from("Task 3"),
+                duration: 60,
+                tags: vec![String::from("some tag")],
+            },
+        ]
+    }
+}

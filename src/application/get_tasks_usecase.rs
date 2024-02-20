@@ -33,3 +33,27 @@ fn format_date(date: DateTime<Utc>) -> String {
     let fmt = "%Y-%m-%d";
     date.format(fmt).to_string()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn make_dummy_tasks_result() -> Result<Vec<Task>, GetTaskErr> {
+        Ok(vec![Task {
+            id: 1,
+            description: String::from("some description"),
+            duration: 12,
+            tags: vec![String::from("some tag")],
+        }])
+    }
+
+    #[test]
+    fn get_tasks_usecase_test() {
+        let mocked_response = make_dummy_tasks_result();
+        let gateway =
+            |_: String, _: String| -> Result<Vec<Task>, GetTaskErr> { make_dummy_tasks_result() };
+        let input = GetTasksInput::new(12);
+        let sut = get_tasks_usecase(&gateway);
+        assert_eq!(sut(input), mocked_response);
+    }
+}
