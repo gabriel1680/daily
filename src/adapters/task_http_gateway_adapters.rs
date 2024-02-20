@@ -9,12 +9,11 @@ use crate::{
 };
 
 /// HttpTasksGateway factory and sync wrapper
-pub fn make_http_tasks_gateway() -> TasksGateway {
-    Box::new(move |start_date: String, end_date: String| {
+pub fn make_http_tasks_gateway() -> TasksGateway<'static> {
+    &move |start_date: String, end_date: String| {
         block_on(async { http_tasks_gateway(start_date, end_date).await })
-    })
+    }
 }
-
 
 /// HttpTasksGateway implementation - retrieves tasks from toggle api endpoint
 ///
