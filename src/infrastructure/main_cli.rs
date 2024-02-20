@@ -2,10 +2,9 @@ use crate::adapters::cli_presenter::{TaskMap, TaskSummary};
 use crate::adapters::{
     cli_presenter::tasks_cli_presenter, task_http_gateway_adapters::make_http_tasks_gateway,
 };
-use crate::application::{
-    get_tasks_input::GetTasksInput,
-    get_tasks_usecase::{get_tasks_usecase, GetTaskErr, TasksGateway},
-};
+use crate::application::get_tasks_error::GetTaskErr;
+use crate::application::tasks_gateway::TasksGateway;
+use crate::application::{get_tasks_input::GetTasksInput, get_tasks_usecase::get_tasks_usecase};
 use crate::domain::task::Task;
 
 use std::env;
@@ -40,7 +39,7 @@ fn print_tasks(map: &TaskMap) {
 fn print_table_header() {
     println!(
         "\n{0: <40} | {1: <10} | {2: <14} | {3: <10}",
-        "Description", "Quantity", "Duration (min)", "Tags"
+        "Description", "Quantity", "Duration (sec)", "Tags"
     );
 }
 

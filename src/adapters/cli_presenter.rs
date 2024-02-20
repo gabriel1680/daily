@@ -11,7 +11,7 @@ pub fn tasks_cli_presenter(tasks: Vec<Task>) -> TaskMap {
             .entry(task.description.to_string())
             .and_modify(|task| {
                 task.quantity += 1;
-                task.total_duration += task.total_duration / 60;
+                task.total_duration += task.total_duration;
             })
             .or_insert(to_output(&task));
     }
@@ -29,7 +29,7 @@ pub struct TaskSummary {
 fn to_output(task: &Task) -> TaskSummary {
     TaskSummary {
         description: task.description.clone(),
-        total_duration: task.duration / 60,
+        total_duration: task.duration,
         tags: task.tags.clone(),
         quantity: 1,
     }

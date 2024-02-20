@@ -4,30 +4,58 @@ use serde::{Deserialize, Serialize};
 use std::env;
 
 use crate::{
-    application::get_tasks_usecase::{GetTaskErr, TasksGateway},
+    application::{get_tasks_error::GetTaskErr, tasks_gateway::TasksGateway},
     domain::task::Task,
 };
 
+/// HttpTasksGateway factory and sync wrapper
 pub fn make_http_tasks_gateway() -> TasksGateway {
     Box::new(move |start_date: String, end_date: String| {
         block_on(async { http_tasks_gateway(start_date, end_date).await })
     })
 }
 
+/// HttpTasksGateway implementation - retrieves tasks from toggle api endpoint
 async fn http_tasks_gateway(start_date: String, end_date: String) -> Result<Vec<Task>, GetTaskErr> {
-    let base_url = "https://api.track.toggl.com/api/v9/me/time_entries".to_owned();
-    let url = base_url + "?start_date=" + &start_date + "&end_date=" + &end_date;
-    let tasks_response_list: Vec<HttpTaskResponse> = make_request(url)
+    let tasks_response_list: Vec<HttpTaskResponse> = make_request(make_url(start_date, end_date))
         .send()
         .await?
         .json::<Vec<HttpTaskResponse>>()
         .await?;
-    Ok(tasks_response_list
-        .iter()
-        .map(|http_response_task| to_task(http_response_task))
-        .collect())
+    Ok(tasks_response_list.iter().map(to_task).collect())
 }
 
+fn make_url(start_date: String, end_date: String) -> String {
+    format!(
+        "https://api.track.toggl.com/api/v9/me/time_entries?start_date={}&end_date={}",
+        start_date, end_date
+    )
+}
+
+fn make_request(url: String) -> reqwest::RequestBuilder {
+    let (username, password) = load_credentials_from_env();
+    Client::new()
+        .request(Method::GET, url)
+        .basic_auth(username, Some(password))
+        .header(CONTENT_TYPE, "application/json")
+}
+
+fn load_credentials_from_env() -> (String, String) {
+    let username = env::var("API_USERNAME").expect("username env var is not set");
+    let password = env::var("API_PASSWORD").expect("password env var is not set");
+    (username, password)
+}
+
+fn to_task(htr: &HttpTaskResponse) -> Task {
+    Task {
+        id: htr.id,
+        description: htr.description.clone(),
+        duration: htr.duration,
+        tags: htr.tags.clone(),
+    }
+}
+
+/// HttpTaskResponse is a list of tasks that toggle api would responde on success
 #[derive(Debug, Serialize, Deserialize)]
 struct HttpTaskResponse {
     at: String,
@@ -55,36 +83,5 @@ impl From<reqwest::Error> for GetTaskErr {
         GetTaskErr {
             message: value.to_string(),
         }
-    }
-}
-
-struct UserCredentials {
-    username: String,
-    password: String,
-}
-
-impl UserCredentials {
-    fn load_from_env() -> UserCredentials {
-        UserCredentials {
-            username: env::var("API_USERNAME").expect("username env var is not set"),
-            password: env::var("API_PASSWORD").expect("password env var is not set"),
-        }
-    }
-}
-
-fn make_request(url: String) -> reqwest::RequestBuilder {
-    let credentials = UserCredentials::load_from_env();
-    Client::new()
-        .request(Method::GET, url)
-        .basic_auth(credentials.username, Some(credentials.password))
-        .header(CONTENT_TYPE, "application/json")
-}
-
-fn to_task(htr: &HttpTaskResponse) -> Task {
-    Task {
-        id: htr.id,
-        description: htr.description.clone(),
-        duration: htr.duration / 60,
-        tags: htr.tags.clone(),
     }
 }
