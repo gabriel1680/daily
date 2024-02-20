@@ -15,7 +15,7 @@ use crate::{
 pub fn get_tasks_usecase(
     gateway: TasksGateway,
 ) -> impl Fn(GetTasksInput) -> Result<Vec<Task>, GetTaskErr> + '_ {
-    let get_tasks = move |input: GetTasksInput| {
+    let get_tasks = |input: GetTasksInput| {
         let (now_date, day_before_date) = get_days_range(input.days_before_today);
         let result = gateway(day_before_date, now_date);
         result
