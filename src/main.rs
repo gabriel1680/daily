@@ -7,7 +7,7 @@ use daily_cli::{
 
 #[tokio::main]
 async fn main() {
-    let days_before_today: u64 = env::args()
+    let days_before_today = env::args()
         .nth(1)
         .expect("no sub days specified")
         .parse::<u64>()
