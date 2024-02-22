@@ -1,4 +1,4 @@
-use std::env;
+use std::{env, process};
 
 use daily_cli::{
     adapters::summary_presenter::{TaskMap, TaskSummary},
@@ -13,8 +13,14 @@ async fn main() {
         .parse::<u64>()
         .expect("days must be a integer number");
     match run(days_before_today) {
-        Ok(map) => print_tasks(&map),
-        Err(err) => eprintln!("Error on get tasks: {}", err),
+        Ok(map) => {
+            print_tasks(&map);
+            process::exit(0);
+        }
+        Err(err) => {
+            eprintln!("{}", err);
+            process::exit(1);
+        }
     }
 }
 
@@ -27,7 +33,7 @@ fn print_tasks(map: &TaskMap) {
 
 fn print_table_header() {
     println!(
-        "\n{0: <40} | {1: <10} | {2: <14} | {3: <10}",
+        "{0: <40} | {1: <10} | {2: <14} | {3: <10}",
         "Description", "Quantity", "Duration (min)", "Tags"
     );
 }
