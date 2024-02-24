@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::domain::task::Task;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct TaskSummary {
     pub description: String,
     pub total_duration: f32,
@@ -18,9 +18,14 @@ pub fn tasks_summary_presenter(tasks: &Vec<Task>) -> TaskMap {
     for task in tasks {
         task_map
             .entry(task.description.to_string())
-            .and_modify(|task| {
-                task.quantity += 1;
-                task.total_duration += task.total_duration;
+            .and_modify(|t| {
+                t.quantity += 1;
+                t.total_duration += sec_to_min(task.duration);
+                let fallback = String::from("\0");
+                let tag = task.tags.get(0).unwrap_or(&fallback);
+                if !t.tags.contains(tag) {
+                    t.tags.push(tag.clone().to_owned());
+                }
             })
             .or_insert(to_output(&task));
     }
@@ -30,10 +35,18 @@ pub fn tasks_summary_presenter(tasks: &Vec<Task>) -> TaskMap {
 fn to_output(task: &Task) -> TaskSummary {
     TaskSummary {
         description: task.description.clone(),
-        total_duration: ((task.duration as f32) / 60.0).round(),
-        tags: task.tags.clone(),
+        total_duration: sec_to_min(task.duration),
+        tags: if task.tags.len() == 0 {
+            vec!["\0".to_owned()]
+        } else {
+            task.tags.clone()
+        },
         quantity: 1,
     }
+}
+
+fn sec_to_min(sec: u32) -> f32 {
+    ((sec as f32) / 60.0).round()
 }
 
 #[cfg(test)]
@@ -41,16 +54,36 @@ mod tests {
 
     use super::*;
 
-    #[test]
-    fn tasks_summary_presenter_test() {
+    fn get_task_summary_of(key: &str) -> TaskSummary {
         let tasks = make_dummy_tasks();
-        let output = tasks_summary_presenter(&tasks);
-        let task_1_summary = output.get("Task 1").unwrap();
-        assert_eq!(task_1_summary.quantity, 2);
-        assert_eq!(task_1_summary.total_duration, 120.0);
-        let task_3_summary = output.get("Task 3").unwrap();
-        assert_eq!(task_3_summary.quantity, 1);
-        assert_eq!(task_3_summary.total_duration, 1.0);
+        let map = tasks_summary_presenter(&tasks);
+        map.get(key).unwrap().clone()
+    }
+
+    #[test]
+    fn tasks_accumulation() {
+        let task_summary = get_task_summary_of("Task 1");
+        assert_eq!(task_summary.quantity, 2);
+        assert_eq!(task_summary.total_duration, 80.0);
+    }
+
+    #[test]
+    fn one_task_only_accumulation() {
+        let task_summary = get_task_summary_of("Task 3");
+        assert_eq!(task_summary.quantity, 1);
+        assert_eq!(task_summary.total_duration, 1.0);
+    }
+
+    #[test]
+    fn empty_tags_vec() {
+        let task_summary = get_task_summary_of("Task 3");
+        assert_eq!(task_summary.tags, vec!["\0"]);
+    }
+
+    #[test]
+    fn tags_concatenation() {
+        let task_summary = get_task_summary_of("Task 1");
+        assert_eq!(task_summary.tags, vec!["tag 1", "tag 2"]);
     }
 
     fn make_dummy_tasks() -> Vec<Task> {
@@ -59,19 +92,19 @@ mod tests {
                 id: 1,
                 description: String::from("Task 1"),
                 duration: 3600,
-                tags: vec![String::from("some tag")],
+                tags: vec![String::from("tag 1")],
             },
             Task {
                 id: 2,
                 description: String::from("Task 1"),
-                duration: 3600,
-                tags: vec![String::from("some tag")],
+                duration: 1200,
+                tags: vec![String::from("tag 2")],
             },
             Task {
                 id: 3,
                 description: String::from("Task 3"),
                 duration: 60,
-                tags: vec![String::from("some tag")],
+                tags: vec![],
             },
         ]
     }

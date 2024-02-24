@@ -1,9 +1,6 @@
 use std::{env, process};
 
-use daily_cli::{
-    adapters::summary_presenter::{TaskMap, TaskSummary},
-    run,
-};
+use daily_cli::{run, TaskMap, TaskSummary};
 
 #[tokio::main]
 async fn main() {
@@ -41,6 +38,9 @@ fn print_table_header() {
 fn print_task(task: &TaskSummary) {
     println!(
         "{0: <40} | {1: <10} | {2: <14} | {3: <10}",
-        task.description, task.quantity, task.total_duration, task.tags[0]
+        task.description,
+        task.quantity,
+        task.total_duration,
+        task.tags.join(", ")
     );
 }
