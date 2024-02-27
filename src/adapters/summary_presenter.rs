@@ -12,6 +12,8 @@ pub struct TaskSummary {
 
 pub type TaskMap = HashMap<String, TaskSummary>;
 
+const EMPTY_STR: &str = "\u{0020}";
+
 /// Map a Vec of Task entity to a HashMap of TaskSummary
 pub fn tasks_summary_presenter(tasks: &Vec<Task>) -> TaskMap {
     let mut task_map: TaskMap = HashMap::new();
@@ -21,7 +23,7 @@ pub fn tasks_summary_presenter(tasks: &Vec<Task>) -> TaskMap {
             .and_modify(|t| {
                 t.quantity += 1;
                 t.total_duration += sec_to_min(task.duration);
-                let fallback = String::from("\0");
+                let fallback = String::from(EMPTY_STR);
                 let tag = task.tags.get(0).unwrap_or(&fallback);
                 if !t.tags.contains(tag) {
                     t.tags.push(tag.clone().to_owned());
@@ -37,7 +39,7 @@ fn to_output(task: &Task) -> TaskSummary {
         description: task.description.clone(),
         total_duration: sec_to_min(task.duration),
         tags: if task.tags.len() == 0 {
-            vec!["\0".to_owned()]
+            vec![EMPTY_STR.to_owned()]
         } else {
             task.tags.clone()
         },
@@ -77,7 +79,7 @@ mod tests {
     #[test]
     fn empty_tags_vec() {
         let task_summary = get_task_summary_of("Task 3");
-        assert_eq!(task_summary.tags, vec!["\0"]);
+        assert_eq!(task_summary.tags, vec!["\u{0020}"]);
     }
 
     #[test]
