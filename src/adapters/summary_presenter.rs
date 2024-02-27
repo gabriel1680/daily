@@ -20,13 +20,13 @@ pub fn tasks_summary_presenter(tasks: &Vec<Task>) -> TaskMap {
     for task in tasks {
         task_map
             .entry(task.description.to_string())
-            .and_modify(|t| {
-                t.quantity += 1;
-                t.total_duration += sec_to_min(task.duration);
+            .and_modify(|summary| {
+                summary.quantity += 1;
+                summary.total_duration += sec_to_min(task.duration);
                 let fallback = String::from(EMPTY_STR);
                 let tag = task.tags.get(0).unwrap_or(&fallback);
-                if !t.tags.contains(tag) {
-                    t.tags.push(tag.clone().to_owned());
+                if !summary.tags.contains(tag) {
+                    summary.tags.push(tag.clone().to_owned());
                 }
             })
             .or_insert(to_output(&task));

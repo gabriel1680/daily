@@ -21,7 +21,7 @@ pub fn make_http_tasks_gateway() -> TasksGateway<'static> {
 ///
 /// This function will return an error if the toggle api call fails for any reason.
 async fn http_tasks_gateway(start_date: String, end_date: String) -> Result<Vec<Task>, GetTaskErr> {
-    let tasks_response_list: Vec<HttpTaskResponse> = make_request(make_url(start_date, end_date))
+    let tasks_response_list = make_request(make_url(start_date, end_date))
         .send()
         .await?
         .json::<Vec<HttpTaskResponse>>()
@@ -30,10 +30,8 @@ async fn http_tasks_gateway(start_date: String, end_date: String) -> Result<Vec<
 }
 
 fn make_url(start_date: String, end_date: String) -> String {
-    format!(
-        "https://api.track.toggl.com/api/v9/me/time_entries?start_date={}&end_date={}",
-        start_date, end_date
-    )
+    let base_url = "https://api.track.toggl.com/api/v9/me/time_entries";
+    format!("{base_url}?start_date={start_date}&end_date={end_date}")
 }
 
 fn make_request(url: String) -> reqwest::RequestBuilder {
